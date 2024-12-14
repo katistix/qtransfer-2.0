@@ -5,6 +5,8 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"sync"
 	"time"
@@ -21,8 +23,29 @@ var (
 func main() {
 	http.HandleFunc("/health", healthHandler)
 
-	http.HandleFunc("/upload", uploadHandler)
-	http.HandleFunc("/download/", downloadHandler)
+	// Serve static files
+	fs := http.FileServer(http.Dir("./public"))
+	http.Handle("/static/", fs) // Serve your static files correctly
+
+	// API endpoints
+	http.HandleFunc("/api/upload", uploadHandler)
+	http.HandleFunc("/api/download/", downloadHandler)
+
+	// Catch-all route to serve index.html for React Router routes
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// Check if the requested file exists
+		path := filepath.Join("./public", r.URL.Path)
+		_, err := os.Stat(path)
+
+		// If the file exists, serve it
+		if err == nil {
+			http.ServeFile(w, r, path)
+			return
+		}
+
+		// Otherwise, serve index.html
+		http.ServeFile(w, r, "./public/index.html")
+	})
 
 	log.Println("Server started at :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import './index.css'
 import HomePage from './pages/HomePage';
 import UploadPage from './pages/UploadPage';
+import DownloadPage from './pages/DownloadPage';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -11,6 +12,7 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/upload" element={<UploadPage />} />
+        <Route path="/download" element={<DownloadPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,
